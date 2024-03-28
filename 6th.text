@@ -1,0 +1,26 @@
+sudo apt update
+sudo apt install vsftpd
+sudo cp /etc/vsftpd.conf /etc/vsftpd.conf.orig
+
+sudo adduser user2 
+sudo mkdir /home/user2/ftp
+sudo chown nobody:nogroup /home/user2/ftp
+sudo chmod a-w /home/user2/ftp
+sudo ls -la /home/user2/ftp
+sudo mkdir /home/user2/ftp/files
+sudo chown user2:user2 /home/user2/ftp/files
+echo "vsftpd test file" | sudo tee /home/user2/ftp/files/test.txt
+
+
+commands
+sudo chmod +x file.sh
+./file.sh
+
+ftp -p 127.0.0.1
+ask user and password
+cd files
+cd ftp
+
+get test.txt
+
+exit
