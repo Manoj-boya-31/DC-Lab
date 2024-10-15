@@ -1,0 +1,172 @@
+View(auto_mpg_1_)
+fix(auto_mpg_1_)
+View(auto_mpg_1_)
+missingelements <- is.na(auto_mpg_1_)
+missingelements
+auto_mpg_1_[missingelements] <- 0
+View(auto_mpg_1_)
+dim(auto_mpg_1_)
+names(auto_mpg_1_)
+
+-----------------------------------------------------------------------------
+
+attach(auto_mpg_1_)
+plot(horsepower,acceleration)
+summary(auto_mpg_1_)
+
+-----------------------------------------------------------------------------
+
+height <- c(151,165,191,180,128,179,210,148,173)
+weight <- c(30,90,36,54,57,60,68,43,76)
+model <- lm(height~weight)
+slope <- coef(model)[2]
+intercept <- coef(model)[1]
+slope
+intercept
+conf_intervals <- predict(model,interval="confidence")
+pred_intervals <- predict(model,interval="prediction")
+conf_intervals
+pred_intervals
+summary(model)
+
+-----------------------------------------------------------------------------
+
+install.packages("ISLR2")
+install.packages("MASS")
+library(ISLR2)
+library(MASS)
+head(Boston)
+? Boston
+model <- lm(medv~lstat,data = Boston)
+model
+manoj <- lm(medv~lstat+age,data = Boston)
+manoj
+summary(manoj)
+
+-----------------------------------------------------------------------------
+
+library(readxl)
+library(MASS)
+library(caret)
+library(tidyverse)
+set.seed(123)
+train_index <- createDataPartition(mtcars$am,p=0.8,list=FALSE)
+train_index
+train <- mtcars[train_index, ]
+train
+test <- mtcars[-train_index, ]
+test
+model=glm(am~ mpg + disp + hp + drat + wt + qsec,data=train,family="binomial")
+model
+pred <- predict(model,newdata=test,type="response")
+pred
+pred_class <- ifelse(pred,"manual","automatic")
+pred_class
+
+
+lda_model <- lda(am~ mpg + disp + hp + drat + wt + qsec,data=train)
+lda_model
+lda_pred <- predict(lda_model,test)$class
+
+-------------------------------------------------------------------------------
+library(readxl)
+library(class)
+--now import market dataset
+train <- sample(nrow(market),0.7*nrow(market))
+market_train<-market[train, ]
+market_test<-market[-train, ]
+knn_pred<-knn(market_train[ ,-9],market_test[ ,-9],market_train$Direction,k=1)
+knn_pred
+table(knn_pred,market_test$Direction)
+
+
+knn_pred_k3<-knn(market_train[ ,-9],market_test[ ,-9],market_train$Direction,k=3)
+knn_pred
+table(knn_pred_k3,market_test$Direction)
+
+
+library(MASS)
+formula <- Direction ~ Lag1+Lag2
+qda_model<-qda(formula,data=market_train)
+qda_model
+qda_pred<-predict(qda_model,market_test,type="class")$class
+qda_pred
+table(qda_pred,market_test$Direction)
+-------------------------------------------------------------------------------
+library(rpart)
+library(rpart.plot)
+library(caret)
+set.seed(123)
+---now import heart_data set
+train<-sample(nrow(heartdata),0.7*nrow(heartdata))
+data_train<-heartdata[train, ]
+data_test<-heartdata[-train, ]
+tree_model<-rpart(target~age+fbs,data=data_train,method="class")
+
+
+internal_nodes<-tree_model$variable.importance
+terminal_nodes<-sum(tree_model$where==1)
+training_error_rate<-1-tree_model$cptable[which.min(tree_model$cptable[ ,"xerror"]),"xerror"]
+
+
+rpart.plot(tree_model,type=4,extra=101,under=TRUE,fallen.leaves=TRUE)
+
+
+predictions<-predict(tree_model,data_test,type="class")
+predictions
+data_test$target<-factor(data_test$target,levels=levels(predictions))
+confusion_matrix<-confusionMatrix(predictions,data_test$target)
+confusion_matrix
+cat("Confusion_matrix : \n",confusion_matrix$table,"\n")
+cat("Accuracy: ",confusion_matrix$overall["Accuracy"])
+----------------------------------------------------------------------------------
+library(ggplot2)
+library(dplyr)
+-- import US arrest dataset
+print(sapply(data,class))
+data<-data[,sapply(data,is.numeric)]
+scale_data<-scale(data)
+pca_result<-prcomp(scale_data,center=TRUE,scale.=TRUE)
+
+pca_data<-as.data.frame(pca_result$x)
+pca_data$State<-rownames(US arrests)
+ggplot(pca_data,aes(x=PC1,y=PC2,label=State))+geom_point()+geom_text(vjust=1.5,size=3)+labs(title="PCA results",x="principle component 1",y="principle component 2")+theme_minimal()
+
+pca_sd<-pca_result$sdev
+pca_sd
+
+pve<-(pca_sd^2)/sum(pca_sd^2)
+----------------------------------------------------------------------------------------
+
+library(caret)
+library(MASS)s
+library(ggplot2)
+data->mtcars
+set.seed(123)
+data<-data[,sapply(data,is.numeric)]
+data<-na.omit(data)
+kmeans_result<-kmeans(data,centers=3)
+kmeans_result
+
+
+data$cluster<-as.factor(kmeans_result$cluster)
+data$cluster
+ggplot(data,aes(x=mpg,y=wt,color=cluster))+geom_point(size=3)+labs(title="k-means clustering result",x="miles per gallon(mpg)",y="weight 100lbs(wt)")+theme_minimal()
+
+hclust_result<-hclust(dist_matrix,method="complete")
+hclust_result
+
+sub_matrix<-data[,-which(names(data)=="cluster")]
+sub_matrix
+dist_matrix_50<-dist(sub_matrix)
+dist_matrix_50
+
+plot(hclust_result,main="hierarchial clustering dendogram result",xlab=" ",sub=" ",cex=0.9)
+------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
